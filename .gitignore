@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+.env.*
+!.env.example
+*.spec
+dist/
+build/
+*.egg-info/
+.uv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+frontend/dist/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+frontend/coverage/
+frontend/.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Monorepo
+.turbo/
