@@ -1,8 +1,12 @@
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 router = APIRouter()
 
-@router.get("/hello")
-async def hello():
-    return {"message": "Hello from FastAPI!"}
+class HelloResponse(BaseModel):
+    message: str
+
+@router.get("/hello", response_model=HelloResponse)
+async def hello() -> HelloResponse:
+    return HelloResponse(message="Hello from FastAPI!")
 
