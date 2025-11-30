@@ -1,0 +1,181 @@
+---
+alwaysApply: false
+---
+# Frontend Development Rules
+
+**CRITICAL: Frontend Isolation**
+When working on frontend tasks, you MUST:
+- Only modify files within `/frontend` directory
+- NEVER modify backend code, config, or dependencies
+- NEVER change root-level configuration files
+- Set working directory to `/frontend` for all frontend operations
+
+## Tech Stack
+
+**Runtime & Framework:**
+- React 19+ with TypeScript
+- Build tool: Vite
+- Dev server: Vite dev server (HMR enabled)
+
+**Package Management:**
+- Use `npm` exclusively (NEVER use yarn or pnpm)
+- Dependencies: `package.json`
+- Lock file: `package-lock.json`
+- Install: `npm install`
+- Add package: `npm install <package>`
+- Run scripts: `npm run <script>`
+
+**Configuration:**
+- TypeScript: `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`
+- Vite: `vite.config.ts`
+- ESLint: `eslint.config.js`
+- Environment: `.env` file (never commit this)
+
+## Project Structure
+
+```
+frontend/
+├── index.html           # HTML entry point
+├── package.json         # npm dependencies & scripts
+├── package-lock.json    # Dependency lock file
+├── vite.config.ts       # Vite configuration (API proxy)
+├── tsconfig.json        # TypeScript base config
+├── eslint.config.js     # ESLint configuration
+├── .env                 # Environment variables (gitignored)
+└── src/
+    ├── main.tsx         # React app entry point
+    ├── App.tsx          # Root component
+    ├── App.css          # Root styles
+    ├── index.css        # Global styles
+    ├── api/
+    │   ├── client.ts    # API client configuration
+    │   └── types.ts     # Auto-generated API types
+    ├── components/      # React components
+    ├── hooks/           # Custom React hooks
+    ├── utils/           # Utility functions
+    └── assets/          # Static assets
+```
+
+## Development Guidelines
+
+**TypeScript Requirements:**
+- **REQUIRED: Strict type safety for all TypeScript/TSX code**
+  - All function parameters must have type annotations
+  - All function return types must be explicitly declared
+  - Use proper React types: `React.FC`, `JSX.Element`, etc.
+  - No implicit `any` types - enable `strict` mode
+  - Props interfaces must be defined for all components
+- Use TypeScript for ALL new files (`.ts`, `.tsx`)
+- Never use `.js` or `.jsx` for new code
+- Prefer interfaces over types for object shapes
+
+**Component Guidelines:**
+- Use functional components with hooks (no class components)
+- Define prop types with TypeScript interfaces
+- Export components as named exports (prefer over default exports)
+- Keep components focused - single responsibility
+- Extract reusable logic into custom hooks
+
+**Code Style:**
+- Follow React best practices and conventions
+- Use meaningful component and variable names
+- Prefer composition over prop drilling
+- Use React hooks properly (dependencies, cleanup)
+- Handle loading and error states explicitly
+
+**Running the Frontend:**
+- Development: `npm run dev`
+- Always run from `/frontend` directory
+- Default port: 5173
+- Hot Module Replacement (HMR) enabled
+- API requests proxied to backend at `/api`
+
+**API Integration:**
+- Use auto-generated types from `src/api/types.ts`
+- Import API client from `src/api/client.ts`
+- Never manually define API types - regenerate from backend
+- Type-safe API calls using generated types
+
+## File Modification Rules
+
+**You MAY modify:**
+- Any TypeScript/TSX file in `/frontend/src`
+- `package.json` for dependencies
+- `.env.example` for documenting env vars
+- Component files in `src/components/`
+- Styles (`.css` files)
+- Vite config for build/dev settings
+- ESLint config for linting rules
+
+**You MUST NOT modify:**
+- Any file in `/backend`
+- `src/api/types.ts` (auto-generated - regenerate instead)
+- Root `README.md` (unless explicitly for frontend docs)
+- Root `API_CONTRACT.md` (unless explicitly requested)
+- Backend configuration (pyproject.toml, main.py, etc.)
+- `.cursor/rules/` files (unless explicitly requested)
+
+## Common Tasks
+
+**Adding a new component:**
+1. Create component file in `src/components/`
+2. Define TypeScript interface for props
+3. Implement functional component with proper types
+4. Export component (prefer named exports)
+5. Import and use in parent component
+
+**Adding a dependency:**
+```bash
+cd frontend
+npm install <package-name>
+```
+
+**Regenerating API types (after backend changes):**
+```bash
+cd frontend
+npm run generate-api-types
+```
+Note: Backend must be running on port 8000
+
+**Updating dependencies:**
+```bash
+cd frontend
+npm install
+```
+
+**Environment variables:**
+1. Add to `.env` with `VITE_` prefix for client-side access
+2. Document in `.env.example`
+3. Access via `import.meta.env.VITE_VAR_NAME`
+4. Never commit `.env` file
+
+**Building for production:**
+```bash
+cd frontend
+npm run build
+```
+Output: `dist/` directory (gitignored)
+
+## Integration with Backend
+
+When backend API changes:
+1. Backend must be running (`cd backend && uv run uvicorn main:app --reload`)
+2. Regenerate types: `npm run generate-api-types`
+3. Update components using changed API types
+4. TypeScript will show errors if types don't match usage
+5. Do NOT manually edit `src/api/types.ts`
+
+**API Proxy in Development:**
+- Vite dev server proxies `/api/*` to `http://localhost:8000`
+- Configured in `vite.config.ts`
+- No CORS issues in development
+- Production uses actual backend URL
+
+## Deployment Notes
+
+- Frontend deploys as Static Site on Render
+- Build output: `dist/` directory
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Environment variables set in Render dashboard
+- SPA routing handled by build configuration

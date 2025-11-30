@@ -1,0 +1,149 @@
+---
+alwaysApply: false
+---
+# Backend Development Rules
+
+**CRITICAL: Backend Isolation**
+When working on backend tasks, you MUST:
+- Only modify files within `/backend` directory
+- NEVER modify frontend code, config, or dependencies
+- NEVER change root-level configuration files
+- Set working directory to `/backend` for all backend operations
+
+## Tech Stack
+
+**Runtime & Framework:**
+- Python 3.13+
+- FastAPI web framework
+- Uvicorn ASGI server
+
+**Package Management:**
+- Use `uv` exclusively (NEVER use pip)
+- Dependencies: `pyproject.toml`
+- Lock file: `uv.lock`
+- Install: `uv sync`
+- Add package: `uv add <package>`
+- Run commands: `uv run <command>`
+
+**Configuration:**
+- Settings: Pydantic Settings in `app/config.py`
+- Environment: `.env` file (never commit this)
+- CORS: `app/cors.py`
+
+## Project Structure
+
+```
+backend/
+├── main.py              # FastAPI app entry point
+├── pyproject.toml       # Python dependencies
+├── uv.lock              # Dependency lock file
+├── .env                 # Environment variables (gitignored)
+└── app/
+    ├── __init__.py
+    ├── config.py        # Pydantic settings
+    ├── cors.py          # CORS configuration
+    └── routes/          # API route modules
+        ├── __init__.py
+        └── api.py
+```
+
+## Development Guidelines
+
+**API Endpoints:**
+- All endpoints MUST be prefixed with `/api`
+- Use FastAPI router pattern for organization
+- Define routes in `app/routes/` modules
+- Follow REST conventions
+
+**Code Style:**
+- **REQUIRED: Full type hinting for all Python code**
+  - All function parameters must have type hints
+  - All function return types must be annotated
+  - Use `typing` module for complex types (List, Dict, Optional, etc.)
+  - No implicit `Any` types - be explicit
+- Follow PEP 8 style guide
+- Use Pydantic models for request/response validation
+- Keep route handlers thin, extract business logic to services
+
+**Running the Backend:**
+- Development: `uv run uvicorn main:app --reload`
+- Always run from `/backend` directory
+- Default port: 8000
+- Auto-reload enabled in development
+
+**API Contract:**
+- OpenAPI schema auto-generated at `/openapi.json`
+- When you modify endpoints, the schema updates automatically
+- Frontend will regenerate types from this schema
+- Document all endpoints with FastAPI docstrings
+
+## File Modification Rules
+
+**You MAY modify:**
+- Any Python file in `/backend`
+- `pyproject.toml` for dependencies
+- `.env.example` for documenting env vars
+- Route files in `app/routes/`
+- Config files in `app/`
+
+**You MUST NOT modify:**
+- Any file in `/frontend`
+- Root `README.md` (unless explicitly for backend docs)
+- Root `API_CONTRACT.md` (unless explicitly requested)
+- Frontend configuration (package.json, vite.config.ts, etc.)
+- `.cursor/rules/` files (unless explicitly requested)
+
+## Common Tasks
+
+**Adding a new endpoint:**
+1. Create/update route file in `app/routes/`
+2. Define Pydantic models for request/response with full type hints
+3. Implement route handler with complete type annotations (params, return type)
+4. Include router in `main.py` if new file
+5. Test endpoint manually or with tests
+
+**Adding a dependency:**
+```bash
+cd backend
+uv add <package-name>
+```
+
+**Updating dependencies:**
+```bash
+cd backend
+uv sync
+```
+
+**Environment variables:**
+1. Add to `app/config.py` Settings class
+2. Document in `.env.example`
+3. Never hardcode secrets
+
+## Testing Checklist
+
+Before completing a backend task:
+- [ ] All changes are within `/backend` directory
+- [ ] No modifications to frontend files
+- [ ] Dependencies added via `uv add` if needed
+- [ ] Environment variables documented in `.env.example`
+- [ ] API endpoints follow `/api` prefix convention
+- [ ] **All functions have complete type hints (parameters AND return types)**
+- [ ] No implicit `Any` types - all types explicitly declared
+- [ ] CORS configuration appropriate for endpoints
+
+## Integration with Frontend
+
+When backend API changes affect frontend:
+1. Complete backend changes first
+2. Verify OpenAPI schema at `/openapi.json`
+3. **Inform user** that frontend types need regeneration
+4. Do NOT modify frontend code unless explicitly in scope
+5. User will run `npm run generate-api-types` in frontend
+
+## Deployment Notes
+
+- Backend deploys as Web Service on Render
+- Environment variables configured in Render dashboard
+- Python runtime selected automatically
+- Build command: `uv sync`
+- Start command: `uv run uvicorn main:app --host 0.0.0.0 --port $PORT`
