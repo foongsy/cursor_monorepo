@@ -1,0 +1,91 @@
+---
+alwaysApply: true
+---
+
+# Monorepo Structure
+
+This is a monorepo containing separate backend and frontend applications. Each directory has its own tech stack, dependencies, and conventions.
+
+## Backend (`/backend`)
+
+**Tech Stack:**
+- Python 3.13+
+- FastAPI web framework
+- Uvicorn ASGI server
+- Package manager: `uv` (NOT pip)
+- Configuration: `pyproject.toml` and `.env`
+
+**Key Patterns:**
+- API routes defined in `app/routes/`
+- Configuration managed via Pydantic Settings in `app/config.py`
+- CORS configuration in `app/cors.py`
+- Entry point: `main.py`
+
+**Commands:**
+- Install dependencies: `uv sync`
+- Run dev server: `uv run uvicorn main:app --reload`
+- Run any Python command: `uv run <command>`
+
+**Important:**
+- Always use `uv` for dependency management, not pip
+- Working directory for backend tasks: `/backend`
+- API endpoints should be prefixed with `/api`
+- Environment variables loaded from `.env` file
+
+## Frontend (`/frontend`)
+
+**Tech Stack:**
+- React 19+ with TypeScript
+- Build tool: Vite
+- Package manager: npm
+- API client: type-safe using OpenAPI-generated types
+
+**Key Patterns:**
+- Source code in `src/`
+- API types auto-generated from backend OpenAPI spec: `src/api/types.ts`
+- API client configuration: `src/api/client.ts`
+- Vite dev server proxies `/api` to backend during development
+
+**Commands:**
+- Install dependencies: `npm install`
+- Run dev server: `npm run dev`
+- Build for production: `npm run build`
+- Generate API types: `npm run generate-api-types` (requires backend running)
+
+**Important:**
+- Working directory for frontend tasks: `/frontend`
+- Use TypeScript for all new files
+- API types should be regenerated when backend API changes
+- Dev server runs on port 5173 by default
+
+## Cross-Cutting Concerns
+
+**API Contract:**
+- Backend exposes OpenAPI schema at `/openapi.json`
+- Frontend generates TypeScript types from this schema
+- See `/API_CONTRACT.md` for API design guidelines
+
+**Development Workflow:**
+1. Start backend first: `cd backend && uv run uvicorn main:app --reload`
+2. Start frontend: `cd frontend && npm run dev`
+3. Frontend dev server proxies API requests to backend
+
+**Deployment:**
+- Backend and frontend deploy as separate services on Render
+- Backend: Web Service (Python runtime)
+- Frontend: Static Site (builds to `dist/`)
+- CORS configured to allow frontend domain
+
+## File Navigation Rules
+
+When working on:
+- **Backend features**: Focus on `/backend` directory, use Python/FastAPI patterns
+- **Frontend features**: Focus on `/frontend` directory, use React/TypeScript patterns
+- **API changes**: Update backend first, then regenerate frontend types
+- **Full-stack features**: Coordinate changes across both directories
+
+**Never mix:**
+- Python dependencies in frontend
+- Node.js/npm in backend
+- Frontend build artifacts in backend
+- Backend runtime files in frontend

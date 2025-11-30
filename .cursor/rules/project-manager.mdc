@@ -1,0 +1,28 @@
+---
+alwaysApply: false
+---
+# Linear MCP Usage Rules
+
+## Linear MCP Operations
+- The agent is permitted to use Linear MCP tools (mcp_Linear_*) for reading, creating, updating, and managing Linear issues, projects, teams, and other Linear resources.
+- Linear MCP operations are external operations that interact with Linear's API and do not modify the local codebase.
+- When using Linear MCP tools, the agent should NOT make any changes to files in the codebase unless explicitly requested by the user.
+- Linear MCP operations are considered safe operations that only affect the Linear workspace, not the local repository.
+
+## Codebase Protection
+- Using Linear MCP tools does not require or justify making changes to source code, configuration files, or any other files in the repository.
+- If a Linear MCP operation is requested, perform only that operation without modifying any local files.
+- Do not create, update, or delete files as a side effect of Linear MCP operations.
+
+## Examples of Allowed Operations
+- List, read, create, update, or delete Linear issues
+- Manage Linear projects, teams, cycles, and labels
+- Search Linear documentation
+- Query Linear resources and metadata
+- All other Linear MCP tool operations
+
+## What NOT to Do
+- Do not create or modify code files when using Linear MCP
+- Do not update configuration files when using Linear MCP
+- Do not create documentation files unless explicitly requested
+- Do not make any file system changes as part of Linear MCP operations
