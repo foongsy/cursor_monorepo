@@ -1,50 +1,65 @@
-import { useEffect, useState } from 'react'
-import './App.css'
-import { fetchHello } from './api/client'
+import { useState } from "react"
+import { Layout } from "@/components/layout"
+import { 
+  FeaturedArticle,
+  CategoryTabs,
+  ArticleGrid,
+} from "@/components/articles"
+import { getSampleArticles } from "@/data/sampleArticles"
+import { getUniqueCategories } from "@/utils/articleUtils"
+import type { Article } from "@/types"
 
 function App() {
-  const [message, setMessage] = useState<string>('')
-  const [error, setError] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(true)
+  const allArticles = getSampleArticles()
+  const categories = getUniqueCategories(allArticles)
+  
+  const [activeCategory, setActiveCategory] = useState<string>("all")
 
-  useEffect(() => {
-    const abortController = new AbortController()
+  // Get featured article (first article)
+  const featuredArticle = allArticles[0]
 
-    fetchHello(abortController.signal)
-      .then(data => {
-        if (!abortController.signal.aborted) {
-          setMessage(data.message)
-          setError('')
-        }
-      })
-      .catch(err => {
-        if (!abortController.signal.aborted) {
-          setError(err.name === 'AbortError' ? 'Request cancelled' : 'Failed to fetch message from backend')
-          console.error('Fetch error:', err)
-        }
-      })
-      .finally(() => {
-        if (!abortController.signal.aborted) {
-          setLoading(false)
-        }
-      })
+  // Filter articles (exclude featured article from grid)
+  const gridArticles = allArticles.slice(1).filter(article => 
+    activeCategory === "all" || article.category === activeCategory
+  )
 
-    return () => {
-      abortController.abort()
-    }
-  }, [])
+  const handleArticleClick = (article: Article) => {
+    console.log("Clicked article:", article.title)
+    // Navigation logic will be added later
+  }
 
   return (
-    <>
-      <h1>Vite + React + FastAPI</h1>
-      <div className="card">
-        <p>
-          {loading && 'Loading...'}
-          {error && <span style={{ color: 'red' }}>Error: {error}</span>}
-          {!loading && !error && `Backend says: ${message}`}
-        </p>
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        {/* Featured Article Hero */}
+        <div className="mb-12">
+          <FeaturedArticle 
+            article={featuredArticle} 
+            onClick={handleArticleClick}
+          />
+        </div>
+
+        {/* Category Tabs */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold text-foreground border-l-4 border-crunchyroll-orange pl-4">
+              Latest News
+            </h2>
+          </div>
+          <CategoryTabs
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+          />
+        </div>
+
+        {/* Articles Grid */}
+        <ArticleGrid 
+          articles={gridArticles}
+          onArticleClick={handleArticleClick}
+        />
       </div>
-    </>
+    </Layout>
   )
 }
 
