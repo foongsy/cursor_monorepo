@@ -4,15 +4,111 @@
  */
 
 export interface paths {
-    "/api/hello": {
+    "/api/news": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Hello */
-        get: operations["hello_api_hello_get"];
+        /**
+         * Get News
+         * @description Get paginated list of news articles with filtering and sorting.
+         *
+         *     - **page**: Page number (starting from 1)
+         *     - **limit**: Number of items per page (max 100)
+         *     - **category**: Optional category filter
+         *     - **search**: Optional search query (searches in title and summary)
+         *     - **sort_by**: Field to sort by (publishedAt, title, category)
+         *     - **sort_order**: Sort order (asc or desc)
+         */
+        get: operations["get_news_api_news_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/news/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Latest News
+         * @description Get the latest news articles.
+         *
+         *     - **limit**: Maximum number of articles to return (max 50)
+         */
+        get: operations["get_latest_news_api_news_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/news/category/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get News By Category
+         * @description Get all news articles in a specific category.
+         *
+         *     - **name**: The category name (e.g., "Anime", "Exhibition", "Movie")
+         */
+        get: operations["get_news_by_category_api_news_category__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/news/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get News Detail
+         * @description Get detailed news article by ID with computed fields.
+         *
+         *     - **id**: The unique article identifier
+         */
+        get: operations["get_news_detail_api_news__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Categories
+         * @description Get list of all available article categories.
+         */
+        get: operations["get_categories_api_categories_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -28,7 +124,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Root */
+        /**
+         * Root
+         * @description Root endpoint returning a welcome message.
+         *
+         *     Returns:
+         *         MessageResponse with welcome message.
+         */
         get: operations["root__get"];
         put?: never;
         post?: never;
@@ -45,7 +147,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health */
+        /**
+         * Health
+         * @description Health check endpoint for monitoring.
+         *
+         *     Returns:
+         *         HealthResponse with status and environment information.
+         */
         get: operations["health_health_get"];
         put?: never;
         post?: never;
@@ -59,20 +167,218 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** HealthResponse */
+        /**
+         * Article
+         * @description Article model matching backend data schema from backend/app/data/articles.json
+         * @example {
+         *       "category": "Exhibition",
+         *       "content": "The Skip and Loafer Exhibition based on Takamatsu Misaki's manga...",
+         *       "id": "650043",
+         *       "imageUrl": "https://ogre.natalie.mu/media/news/comic/2025/1130/skipandloafer.jpg",
+         *       "publishedAt": "2025-11-30T02:42:00Z",
+         *       "sourceUrl": "https://natalie.mu/comic/news/650043",
+         *       "summary": "The Skip and Loafer Exhibition unveils a special exhibition anime visual.",
+         *       "tags": [
+         *         "Skip and Loafer",
+         *         "Exhibition",
+         *         "Visual Reveal"
+         *       ],
+         *       "title": "Skip and Loafer Exhibition Reveals New Visual"
+         *     }
+         */
+        Article: {
+            /**
+             * Id
+             * @description Unique article identifier
+             */
+            id: string;
+            /**
+             * Title
+             * @description Article title
+             */
+            title: string;
+            /**
+             * Summary
+             * @description Brief article summary
+             */
+            summary: string;
+            /**
+             * Content
+             * @description Full article content
+             */
+            content: string;
+            /**
+             * Imageurl
+             * Format: uri
+             * @description URL to article image
+             */
+            imageUrl: string;
+            /** @description Article category */
+            category: components["schemas"]["ArticleCategory"];
+            /**
+             * Publishedat
+             * Format: date-time
+             * @description Publication timestamp (ISO 8601)
+             */
+            publishedAt: string;
+            /**
+             * Sourceurl
+             * Format: uri
+             * @description Original source URL
+             */
+            sourceUrl: string;
+            /**
+             * Tags
+             * @description List of article tags
+             */
+            tags?: string[];
+        };
+        /**
+         * ArticleCategory
+         * @description Article categories from natalie.mu
+         * @enum {string}
+         */
+        ArticleCategory: "Exhibition" | "New Series" | "Anime" | "Event" | "Manga Release" | "Live-Action" | "Campaign" | "Movie";
+        /**
+         * ArticleDetail
+         * @description Utility model for article detail view.
+         *     Extends Article with computed fields.
+         * @example {
+         *       "category": "Exhibition",
+         *       "content": "The Skip and Loafer Exhibition based on Takamatsu Misaki's manga...",
+         *       "id": "650043",
+         *       "imageUrl": "https://ogre.natalie.mu/media/news/comic/2025/1130/skipandloafer.jpg",
+         *       "publishedAt": "2025-11-30T02:42:00Z",
+         *       "sourceUrl": "https://natalie.mu/comic/news/650043",
+         *       "summary": "The Skip and Loafer Exhibition unveils a special exhibition anime visual.",
+         *       "tags": [
+         *         "Skip and Loafer",
+         *         "Exhibition",
+         *         "Visual Reveal"
+         *       ],
+         *       "title": "Skip and Loafer Exhibition Reveals New Visual"
+         *     }
+         */
+        ArticleDetail: {
+            /**
+             * Id
+             * @description Unique article identifier
+             */
+            id: string;
+            /**
+             * Title
+             * @description Article title
+             */
+            title: string;
+            /**
+             * Summary
+             * @description Brief article summary
+             */
+            summary: string;
+            /**
+             * Content
+             * @description Full article content
+             */
+            content: string;
+            /**
+             * Imageurl
+             * Format: uri
+             * @description URL to article image
+             */
+            imageUrl: string;
+            /** @description Article category */
+            category: components["schemas"]["ArticleCategory"];
+            /**
+             * Publishedat
+             * Format: date-time
+             * @description Publication timestamp (ISO 8601)
+             */
+            publishedAt: string;
+            /**
+             * Sourceurl
+             * Format: uri
+             * @description Original source URL
+             */
+            sourceUrl: string;
+            /**
+             * Tags
+             * @description List of article tags
+             */
+            tags?: string[];
+            /**
+             * Formatteddate
+             * @description Human-readable formatted date
+             */
+            formattedDate: string;
+            /**
+             * Readingtime
+             * @description Estimated reading time in minutes
+             */
+            readingTime: number;
+        };
+        /**
+         * ArticlesResponse
+         * @description Response structure for article list endpoints.
+         * @example {
+         *       "articles": [],
+         *       "limit": 20,
+         *       "page": 1,
+         *       "total": 100
+         *     }
+         */
+        ArticlesResponse: {
+            /**
+             * Articles
+             * @description List of articles
+             */
+            articles: components["schemas"]["Article"][];
+            /**
+             * Total
+             * @description Total number of articles
+             */
+            total?: number | null;
+            /**
+             * Page
+             * @description Current page number
+             */
+            page?: number | null;
+            /**
+             * Limit
+             * @description Items per page
+             */
+            limit?: number | null;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HealthResponse
+         * @description Response model for health check endpoint.
+         */
         HealthResponse: {
             /** Status */
             status: string;
+            /** Environment */
+            environment: string;
         };
-        /** HelloResponse */
-        HelloResponse: {
-            /** Message */
-            message: string;
-        };
-        /** MessageResponse */
+        /**
+         * MessageResponse
+         * @description Response model for simple message endpoints.
+         */
         MessageResponse: {
             /** Message */
             message: string;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
         };
     };
     responses: never;
@@ -83,7 +389,143 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    hello_api_hello_get: {
+    get_news_api_news_get: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                /** @description Items per page */
+                limit?: number;
+                /** @description Filter by category */
+                category?: components["schemas"]["ArticleCategory"] | null;
+                /** @description Search query */
+                search?: string | null;
+                /** @description Sort field */
+                sort_by?: string;
+                /** @description Sort order (asc/desc) */
+                sort_order?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticlesResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_latest_news_api_news_latest_get: {
+        parameters: {
+            query?: {
+                /** @description Number of latest articles */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleDetail"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_news_by_category_api_news_category__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleDetail"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_news_detail_api_news__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_categories_api_categories_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -98,7 +540,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HelloResponse"];
+                    "application/json": string[];
                 };
             };
         };

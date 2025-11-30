@@ -1,4 +1,4 @@
-export const Footer = () => {
+export function Footer(): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -112,5 +112,5 @@ export const Footer = () => {
       </div>
     </footer>
   );
-};
+}
 

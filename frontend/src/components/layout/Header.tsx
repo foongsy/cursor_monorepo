@@ -1,45 +1,46 @@
+import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export const Header = () => {
+export function Header(): React.JSX.Element {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         {/* Logo */}
         <div className="flex items-center gap-6 mr-6">
-          <a href="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="font-bold text-2xl text-primary">
               ANIME NEWS
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* Navigation */}
         <nav className="flex items-center gap-6 text-sm font-medium flex-1">
-          <a
-            href="/browse"
+          <Link
+            to="/"
             className="transition-colors hover:text-primary text-foreground/60"
           >
-            Browse
-          </a>
-          <a
-            href="/news"
+            Home
+          </Link>
+          <Link
+            to="/category/Anime"
             className="transition-colors hover:text-primary text-foreground/60"
           >
-            News
-          </a>
-          <a
-            href="/manga"
+            Anime
+          </Link>
+          <Link
+            to="/category/Manga%20Release"
             className="transition-colors hover:text-primary text-foreground/60"
           >
             Manga
-          </a>
-          <a
-            href="/games"
+          </Link>
+          <Link
+            to="/category/Event"
             className="transition-colors hover:text-primary text-foreground/60"
           >
-            Games
-          </a>
+            Events
+          </Link>
         </nav>
 
         {/* Right side actions */}
@@ -55,5 +56,5 @@ export const Header = () => {
       </div>
     </header>
   );
-};
+}
 
