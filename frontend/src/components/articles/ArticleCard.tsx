@@ -1,4 +1,4 @@
-import type { Article } from "@/types"
+import type { ArticleDetail } from "@/api/client"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -16,11 +16,11 @@ import {
 } from "@/utils/articleUtils"
 
 interface ArticleCardProps {
-  article: Article
-  onClick?: (article: Article) => void
+  article: ArticleDetail
+  onClick?: (article: ArticleDetail) => void
 }
 
-export const ArticleCard = ({ article, onClick }: ArticleCardProps) => {
+export const ArticleCard = ({ article, onClick }: ArticleCardProps): React.JSX.Element => {
   return (
     <Card 
       className="flex flex-col h-full hover:shadow-lg transition-shadow cursor-pointer group overflow-hidden"
@@ -56,18 +56,20 @@ export const ArticleCard = ({ article, onClick }: ArticleCardProps) => {
           {truncateText(article.summary, 100)}
         </CardDescription>
         
-        <div className="flex flex-wrap gap-1 mt-3">
-          {article.tags.slice(0, 2).map(tag => (
-            <Badge key={tag} variant="outline" className="text-[10px] px-1 h-5 text-muted-foreground">
-              {tag}
-            </Badge>
-          ))}
-        </div>
+        {article.tags && article.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-3">
+            {article.tags.slice(0, 2).map((tag: string) => (
+              <Badge key={tag} variant="outline" className="text-[10px] px-1 h-5 text-muted-foreground">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
       
       <CardFooter className="p-4 pt-0 text-xs text-muted-foreground flex justify-between items-center border-t bg-muted/5 py-2 mt-auto">
         <span>{formatArticleDate(article.publishedAt)}</span>
-        <span>{calculateReadingTime(article.content)} min read</span>
+        <span>{article.readingTime || calculateReadingTime(article.content)} min read</span>
       </CardFooter>
     </Card>
   )

@@ -1,15 +1,15 @@
-import type { Article } from "@/types"
+import type { ArticleDetail } from "@/api/client"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatArticleDate, calculateReadingTime } from "@/utils/articleUtils"
 import { PlayCircle, Clock } from "lucide-react"
 
 interface FeaturedArticleProps {
-  article: Article
-  onClick?: (article: Article) => void
+  article: ArticleDetail
+  onClick?: (article: ArticleDetail) => void
 }
 
-export const FeaturedArticle = ({ article, onClick }: FeaturedArticleProps) => {
+export const FeaturedArticle = ({ article, onClick }: FeaturedArticleProps): React.JSX.Element => {
   return (
     <div 
       className="relative w-full aspect-[21/9] min-h-[400px] rounded-xl overflow-hidden group cursor-pointer shadow-xl"
@@ -36,7 +36,7 @@ export const FeaturedArticle = ({ article, onClick }: FeaturedArticleProps) => {
               <Clock className="w-3 h-3" />
               {formatArticleDate(article.publishedAt)}
             </span>
-            <span className="text-sm text-gray-300">• {calculateReadingTime(article.content)} min read</span>
+            <span className="text-sm text-gray-300">• {article.readingTime || calculateReadingTime(article.content)} min read</span>
           </div>
 
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight group-hover:text-crunchyroll-orange transition-colors line-clamp-2 drop-shadow-lg">
